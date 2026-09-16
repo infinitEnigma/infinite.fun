@@ -7,17 +7,19 @@ import {LaunchpadFactory} from "../LaunchpadFactory.sol";
 
 /// @title infinite.fun Deploy Script
 /// @notice Deploys KeeperRegistry then LaunchpadFactory and wires them together.
+/// @dev Run with: forge script contracts/script/Deploy.s.sol:Deploy \
+///      --rpc-url <RPC> --private-key <KEY> --broadcast --legacy -vvv
 contract Deploy is Script {
     // Arc Testnet USDC
     address constant USDC = 0x3600000000000000000000000000000000000000;
 
     function run() external {
-        uint256 deployerKey = vm.envUint("PRIVATE_KEY");
-        address deployer = vm.addr(deployerKey);
-        address keeper = vm.envOr("KEEPER_ADDRESS", deployer);
-        address treasury = vm.envOr("TREASURY_ADDRESS", deployer);
+        // Use the key passed via --private-key CLI flag (no env parsing needed)
+        vm.startBroadcast();
 
-        vm.startBroadcast(deployerKey);
+        address deployer = msg.sender;
+        address keeper   = vm.envOr("KEEPER_ADDRESS",  deployer);
+        address treasury = vm.envOr("TREASURY_ADDRESS", deployer);
 
         // 1. Deploy KeeperRegistry
         KeeperRegistry registry = new KeeperRegistry(keeper, treasury);
@@ -33,10 +35,10 @@ contract Deploy is Script {
 
         vm.stopBroadcast();
 
-        // Output for src/contracts.json
+        // Print addresses for wiring into src/contracts.json
         console.log("---ADDRESSES---");
         console.log("REGISTRY=%s", address(registry));
-        console.log("FACTORY=%s", address(factory));
-        console.log("USDC=%s", USDC);
+        console.log("FACTORY=%s",  address(factory));
+        console.log("USDC=%s",     USDC);
     }
 }

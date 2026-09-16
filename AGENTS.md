@@ -1,4 +1,4 @@
-# [App Name]
+# infinite.fun
 
 > Built with Arc Studio - money-powered apps in minutes
 
@@ -8,7 +8,21 @@ This is the **project memory** - what Arc Studio remembers about building this a
 
 ## What This App Does
 
-[Brief description of what the app does and its primary use case]
+A token launchpad on Arc Testnet where every launched ERC-20 is backed by a live leveraged perpetual position.
+A bonding curve funds the position from fees; a keeper loop claims fees, splits them 50/15/20/15,
+tops up margin, and burns supply on profit-takes. Inspired by the Perps Hood paper (https://perpshood.fun/paper).
+
+## Deployed Contracts (Arc Testnet — Chain ID 5042002)
+
+| Contract | Address |
+|---|---|
+| KeeperRegistry | `0xfd8B9Ddb776Bd1608F1774255B7FE2caf674fa08` |
+| LaunchpadFactory | `0x937a4C48E3C50875AF19825B177d6A71b5194C31` |
+| USDC (Arc Testnet) | `0x3600000000000000000000000000000000000000` |
+
+- Deployed by: `0xf7B35a7cDCb6f39ad42ADf7111Ce74B890F5e1B4`
+- Deployed at: 2026-09-16
+- Addresses also in `src/contracts.json`
 
 ## Tech Stack
 
