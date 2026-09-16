@@ -1,147 +1,50 @@
-Good. Here is the fully updated plan:
+Good call. Let me read the current UI files before touching anything. Good picture of the current state. Before touching a single line, here are the logo and hero ideas — then I'll do the UI pass.
 
 ---
 
-## infinite.fun — Updated Implementation Plan
+**Logo ideas for infinite.fun**
 
-### Summary
-A token launchpad on Arc Testnet where every launched ERC-20 is backed by a live leveraged perpetual position. A bonding curve funds the position from fees; a keeper loop claims fees, splits them 50/15/20/15, tops up margin, and burns supply on profit-takes. The backend (Express 5 + PostgreSQL 14) stores event history, coin metadata, and position snapshots; the frontend reads from the API instead of raw RPC for most data. Hyperliquid is the perp routing destination. Deployed on Ubuntu 22 behind nginx 1.18.
+The name has two strong assets: the infinity symbol `∞` and the word "infinite" being literally endless. Three directions:
 
----
+**Direction 1 — The ∞ as a position**
+The infinity loop rendered as two candles (like a trading chart). Left loop = long position going up, right loop = the burn. Color: steel blue fading to the accent blue. Works as a favicon at 16px and a wordmark.
 
-### Architecture
+**Direction 2 — Orbit / flywheel**
+A circle of small dots orbiting a central coin icon — each dot represents one step of the keeper cycle (fee → margin → profit → burn → fee). Animated in CSS (slow rotation, 20s). Clean, technical, says "perpetual motion."
 
-**Blockchain:** Arc Testnet (chain ID 5042002). USDC native gas token, sub-second finality.
+**Direction 3 — Minimal wordmark**
+`∞.fun` in Space Grotesk Bold. The `∞` in the accent blue (`#acc6e9`), `.fun` in a dimmer white. No icon — just the mark. This is the strongest at small sizes and in the nav.
 
-**Contracts (5):**
-1. `LaunchpadFactory.sol` — CREATE2 deploys Token + SubWallet + BondingCurve per coin. Stores 50/15/20/15 fee split in basis points. Opens perp once $20 collateral accrues.
-2. `Token.sol` — ERC-20, fixed 1B supply, no mint. `burn()` callable only by the coin's SubWallet.
-3. `BondingCurve.sol` — xy=k curve, 1% flat fee, graduates at 4.2 ETH-equivalent USDC, migrates LP to Uniswap V2 on graduation.
-4. `SubWallet.sol` — per-coin USDC treasury, CREATE2 derived. Keeper-only ACL on `claimAndSplit`, `addMargin`, `openPosition`, `takeProfitSlice`, `burnBuyback`. Calls Hyperliquid bridge for perp ops.
-5. `KeeperRegistry.sol` — keeper address ACL, coin→SubWallet map, coin state (pendingFees, collateral, positionSize, openPrice). Emits events the backend indexes.
-
-**Backend (Express 5 + TypeScript 5 + PostgreSQL 14):**
-- Single Node/Bun process: Express API server + keeper tick loop (15s interval) in one process, sharing one DB connection pool.
-- Keeper indexes all on-chain events into Postgres; API serves them to the frontend.
-- Image uploads stored to local disk; nginx serves them as static files.
-- Discord webhook notifications on graduation, profit-take, and near-liquidation events.
-
-**Frontend:** Vite + React + TypeScript + Tailwind. Arc Dark mode. Reads coin list, metadata, event history, and position snapshots from the Express API. Writes (buy, sell, launch coin) go direct to chain via wagmi + ConnectKit.
-
-**Server layout (Ubuntu 22):**
-```
-/var/www/infinite.fun/        ← dist/ (nginx static)
-/var/www/infinite.fun/images/ ← coin images (nginx static)
-/home/ubuntu/infinite-fun/    ← backend source + .env
-  server/                     ← Express API + keeper
-  scripts/                    ← deploy, migrate, etc.
-```
-Keeper + API run under pm2. nginx proxies `/api/*` to Express (port 3001), serves everything else as static.
+**My pick:** Direction 3 for the nav logo (just CSS + the font you already have), Direction 2 as the hero illustration (pure CSS animation, no image dependency).
 
 ---
 
-### Database Schema (PostgreSQL 14)
+**Hero section ideas**
 
-```sql
-coins          (address PK, name, ticker, description, image_url, creator,
-                market, leverage, fee_dest, launched_at, graduated_at,
-                graduation_pool)
+Current hero is just a title + subtitle. Three approaches that would make it land harder:
 
-keeper_events  (id, coin_address FK, event_type, usdc_amount, tx_hash,
-                block_number, created_at)
-               -- event_type: fee_claimed | margin_added | profit_taken |
-               --             buyback_burned | position_opened | graduated
+**Option A — Live stats strip**
+Below the headline: three animated counters. "X coins live", "X USDC in perps", "X tokens burned." Polled from the API every 30s. Makes the page feel alive even with few coins.
 
-position_snapshots (id, coin_address FK, collateral, position_size,
-                    entry_price, mark_price, unrealized_pnl, snapshotted_at)
-               -- written every keeper tick per active coin
+**Option B — Animated flywheel diagram**
+A CSS-only diagram showing the cycle: Curve → Fees → SubWallet → Hyperliquid → Profit → Burn → back to Curve. Nodes connected by animated dashed lines. Explains the mechanic visually in 2 seconds.
 
-leaderboard_cache (coin_address PK, total_fees_claimed, total_burned,
-                   total_pnl, updated_at)
-               -- materialized by keeper after each tick
-```
+**Option C — Ticker tape**
+A horizontally scrolling marquee of all active coins with their live P&L. Like a Bloomberg terminal strip. Feels native to the trading aesthetic.
+
+**Best combination:** Option A (stats strip) + Option C (ticker tape) together below the headline. Direction 3 logo in the nav. Option B flywheel diagram can live in an "How it works" section further down the page.
 
 ---
 
-### Files to Create / Modify
+Ready to build all of this. Here's what the UI pass will cover:
 
-**Contracts**
-1. `contracts/Token.sol`
-2. `contracts/SubWallet.sol`
-3. `contracts/BondingCurve.sol`
-4. `contracts/LaunchpadFactory.sol`
-5. `contracts/KeeperRegistry.sol`
-6. `contracts/interfaces/IHyperliquidBridge.sol`
-7. `contracts/interfaces/IUniswapV2Router.sol`
-8. `contracts/script/Deploy.s.sol`
+- **Global CSS**: deeper shadows, glow effects on cards, glass surface variables, improved border radii, subtle grid/noise texture on background
+- **Nav**: `∞.fun` wordmark, glow on hover for buttons, frosted glass stronger
+- **Hero**: stats strip (live counters), ticker tape marquee, better headline sizing
+- **CoinCard**: box-shadow with accent glow on hover, glass effect, richer info (leverage badge, time since launch, position status dot)
+- **CoinDetail**: better stat cards with icons and tooltips, polished chart, improved tab design
+- **Footer**: links (GitHub, docs, Discord), chain info, "built on Arc" badge, GPL notice
+- **Tooltips**: added to all fee split percentages, leverage badge, graduation threshold, keeper status
+- **Transitions**: smooth page entrance animations, card hover lifts
 
-**Backend**
-9. `server/index.ts` — Express 5 app entry; mounts routes; starts keeper tick loop.
-10. `server/db.ts` — `pg` pool, typed query helpers.
-11. `server/keeper/tick.ts` — 15s interval: enumerate active coins, call chain, write events + snapshots to DB, fire Discord webhooks.
-12. `server/keeper/hyperliquid.ts` — Hyperliquid read/write API client (position query, margin deposit, partial close).
-13. `server/routes/coins.ts` — `GET /api/coins`, `GET /api/coins/:address`, `POST /api/coins` (metadata at launch).
-14. `server/routes/events.ts` — `GET /api/coins/:address/events`, `GET /api/coins/:address/snapshots`.
-15. `server/routes/leaderboard.ts` — `GET /api/leaderboard`.
-16. `server/routes/upload.ts` — `POST /api/upload` (multipart image → `/var/www/infinite.fun/images/`).
-17. `server/routes/feed.ts` — `GET /api/feed` (all coins + latest snapshot, paginated, for launch feed).
-18. `server/migrations/001_initial.sql` — full schema DDL.
-19. `server/notify.ts` — Discord webhook helper; called by keeper on graduation / profit-take / near-liquidation.
-
-**Deploy / Config**
-20. `src/contracts.json` — written by deploy script; imported by frontend and server.
-21. `.env.example` — all required vars documented.
-22. `deploy/nginx.conf` — nginx site config: static root, `/api` proxy pass to 3001, `/images` static alias, gzip, cache headers.
-23. `deploy/infinite-fun.service` — systemd unit (alternative to pm2) for the backend process.
-24. `deploy/README.md` — step-by-step self-host instructions: clone, `bun install`, `psql < migrations/001_initial.sql`, set `.env`, `bun run build`, pm2/systemd start, nginx symlink.
-
-**Frontend**
-25. `src/config.ts` — wagmi + ConnectKit for Arc Testnet. *(modify)*
-26. `src/App.tsx` — router: `/`, `/launch`, `/coin/:address`, `/leaderboard`. *(modify)*
-27. `src/api.ts` — typed fetch client for all Express endpoints.
-28. `src/pages/LaunchFeed.tsx` — card grid from `GET /api/feed`; live market cap bars.
-29. `src/pages/LaunchForm.tsx` — name, ticker, description, image upload, market selector (9), leverage slider, fee destination toggle.
-30. `src/pages/CoinDetail.tsx` — bonding curve chart, buy/sell panel, perp position card, fee split bar, keeper event log, P&L history chart.
-31. `src/pages/Leaderboard.tsx` — top coins by total burned, total P&L, total fees.
-32. `src/components/BuySellPanel.tsx` — wagmi `writeContract` buy/sell; price impact preview.
-33. `src/components/PerpPositionCard.tsx` — polls `/api/coins/:address/snapshots`; color-coded P&L.
-34. `src/components/FeeSplitBar.tsx` — 50/15/20/15 bar with live USDC totals from event history.
-35. `src/components/KeeperLog.tsx` — event feed from `/api/coins/:address/events`.
-36. `src/components/CoinCard.tsx` — ticker, market cap progress bar, perp status badge.
-
----
-
-### Build Sequence
-
-1. **Contracts** — write all 5 + interfaces. Balanced audit (critical + high + Slither). Fix findings. Deploy to Arc Testnet. Write addresses to `src/contracts.json`.
-2. **Database** — write `001_initial.sql` migration. Document `psql` setup in deploy README.
-3. **Backend core** — `db.ts`, `index.ts`, keeper tick loop, Hyperliquid client, Discord notify.
-4. **Backend routes** — coins, events, snapshots, leaderboard, upload, feed.
-5. **nginx + deploy config** — `nginx.conf`, systemd unit, deploy README.
-6. **Frontend wiring** — `src/api.ts`, `src/config.ts`, `App.tsx` router.
-7. **Frontend pages** — LaunchFeed → LaunchForm → CoinDetail → Leaderboard.
-8. **Frontend components** — BuySellPanel → PerpPositionCard → FeeSplitBar → KeeperLog → CoinCard.
-9. **Polish** — Arc Dark theme, recharts P&L sparklines, animated progress bars, toast notifications on keeper events.
-
----
-
-### Done When
-- [ ] All 5 contracts compile, pass balanced audit, deploy to Arc Testnet
-- [ ] LaunchpadFactory deploys Token + SubWallet + BondingCurve in one tx
-- [ ] 1% bonding curve fee correctly splits 50/15/20/15 on-chain
-- [ ] Keeper tick loop runs, writes all event types to Postgres, snapshots position every 15s
-- [ ] Keeper branches correctly: `takeProfitSlice` at +50%, `addMargin` in drawdown
-- [ ] Graduation threshold fires Uniswap V2 migration + writes `graduated_at` to DB
-- [ ] Discord webhooks fire on graduation, profit-take, near-liquidation
-- [ ] All Express routes return correct typed responses
-- [ ] Image upload stores file, returns URL
-- [ ] Frontend launch feed loads from API, shows live market cap progress
-- [ ] Coin detail shows P&L chart from snapshots, event log from keeper_events
-- [ ] Leaderboard ranks by total burned and total P&L
-- [ ] ConnectKit connects on Arc Testnet; buy/sell/launch transactions confirm
-- [ ] nginx config proxies `/api` correctly, serves `dist/` and `/images` as static
-- [ ] Deploy README covers full Ubuntu 22 setup end to end
-
----
-
-Plan saved. Switch to **Build mode** to start — contracts first, then backend, then frontend.
+Say "go" and I'll build it all now.
