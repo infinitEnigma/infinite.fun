@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+# Environment — NEVER commit secrets
+.env
+.env.*
+!.env.example
+
+# Circle entity secret recovery files
+.circle/
+recovery_file*
+*.dat
+
+# Logs
+*.log
+/tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Foundry
+cache/
+out/
+
+# Uploads (serve from /var/www on production)
+uploads/
+public/images/
+
+# Runtime debug captures
+console.jsonl
+traces.jsonl
+
+# Foundry dependencies (installed via forge install)
+lib/
