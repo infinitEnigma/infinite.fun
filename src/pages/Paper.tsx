@@ -104,9 +104,11 @@ const TOC = [
   { id: 'keeper',         label: '7. Keeper Architecture' },
   { id: 'graduation',     label: '8. Graduation' },
   { id: 'tokenomics',     label: '9. Tokenomics' },
-  { id: 'security',       label: '10. Security Model' },
-  { id: 'risks',          label: '11. Risks' },
-  { id: 'roadmap',        label: '12. Roadmap' },
+  { id: 'inf-token',      label: '10. The INF Token' },
+  { id: 'strategy-layer', label: '11. Strategy Layer' },
+  { id: 'security',       label: '12. Security Model' },
+  { id: 'risks',          label: '13. Risks' },
+  { id: 'roadmap',        label: '14. Roadmap' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -145,7 +147,7 @@ export function Paper() {
         {/* Header */}
         <div className="mb-12">
           <div className="text-xs font-mono mb-4 tracking-widest uppercase" style={{ color: 'var(--accent)' }}>
-            Whitepaper · v0.1 · September 2026
+            Whitepaper · v0.2 · September 2026
           </div>
           <H1>infinite.fun: A Perpetual-Backed Token Launchpad</H1>
           <p className="text-lg leading-relaxed mb-6" style={{ color: 'var(--subtle)' }}>
@@ -411,8 +413,82 @@ export function Paper() {
           simultaneously.
         </P>
 
-        {/* ---- 10. Security ---- */}
-        <H2 id="security">10. Security Model</H2>
+        {/* ---- 10. The INF Token ---- */}
+        <H2 id="inf-token">10. The INF Token</H2>
+        <P>
+          INF is the governance and value-accrual token of the infinite.fun protocol.
+          It is a fixed-supply ERC-20 with voting capabilities (ERC20Votes) that enables
+          on-chain governance over protocol parameters. INF is not required to use the
+          launchpad — any wallet can launch a coin, buy, sell, and earn creator fees without
+          holding INF. It enhances participation and aligns long-term incentives.
+        </P>
+        <H3>Fixed Supply and Allocation</H3>
+        <P>
+          The total supply is fixed at <strong style={{ color: 'var(--ink-2)' }}>1,000,000,000 INF</strong>.
+          The entire supply is minted at construction with no mint function. Allocation at genesis:
+        </P>
+        <Table rows={[
+          ['40% — Community',   '400,000,000 INF', 'Airdrop, liquidity mining, community grants. Controlled by governance.'],
+          ['25% — Treasury',    '250,000,000 INF', 'Protocol operations, development, audits. Controlled by governance multisig.'],
+          ['20% — Team',        '200,000,000 INF', '4-year linear vesting, 1-year cliff. Held in TokenVesting contract.'],
+          ['10% — Ecosystem',   '100,000,000 INF', 'Keeper operators, integrators, auditors, protocol partnerships.'],
+          ['5% — Liquidity',    '50,000,000 INF',  'Initial DEX liquidity bootstrap at TGE. Burned LP tokens.'],
+        ]} />
+        <H3>Utility</H3>
+        <Ul>
+          <Li><strong style={{ color: 'var(--ink-2)' }}>Governance.</strong> INF holders propose and vote on protocol parameters including launch fee, platform fee basis points, graduation thresholds, and strategy allocation.</Li>
+          <Li><strong style={{ color: 'var(--ink-2)' }}>Fee sharing.</strong> A portion of PlatformTreasury revenue will be distributed to INF stakers proportional to their stake weight. The exact share is a governance parameter.</Li>
+          <Li><strong style={{ color: 'var(--ink-2)' }}>Keeper rights.</strong> Staked INF grants eligibility to operate a keeper for one or more coins, earning a portion of the keeper fee slice. This decentralizes the keeper layer.</Li>
+          <Li><strong style={{ color: 'var(--ink-2)' }}>Access tiers.</strong> INF holders above a defined threshold receive reduced launch fees and early access to experimental markets.</Li>
+        </Ul>
+        <Callout accent>
+          The INF token contract is deployed on Arc Testnet at{' '}
+          <span className="mono text-xs" style={{ color: 'var(--accent-2)' }}>
+            0x199c7111bdfeB8aA8a3ABf7AB69D5554aD8c7A37
+          </span>.
+          TGE timing and distribution details will be announced through official channels.
+          No presale, no private sale. Community allocation is 40%.
+        </Callout>
+
+        {/* ---- 11. Strategy Layer ---- */}
+        <H2 id="strategy-layer">11. Strategy Layer</H2>
+        <P>
+          The keeper currently executes a single hardcoded strategy for every coin: add margin
+          in drawdown, take a 25% partial close at +50% unrealized P&L. This is a starting
+          point, not a ceiling.
+        </P>
+        <P>
+          The protocol is designed to support a pluggable strategy layer. The{' '}
+          <span className="mono text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--surface)', color: 'var(--accent-2)' }}>
+            IPositionStrategy
+          </span>{' '}
+          interface (already present in the repository) defines an advisory pattern: a strategy
+          contract receives the current position state and returns an action recommendation. The
+          keeper executes the action through the SubWallet. The strategy has no custody of funds.
+        </P>
+        <H3>Governance-Approved Strategies</H3>
+        <P>
+          Community governance will maintain a registry of approved strategy implementations.
+          Strategies must pass an on-chain safety review and INF holder vote before activation.
+          Three strategy tiers are planned: Conservative, Balanced (current default), and
+          Aggressive. Coin creators choose a tier at launch.
+        </P>
+        <H3>Agent-Driven Execution</H3>
+        <P>
+          Beyond rule-based strategies, the layer is designed to accommodate trained agents that
+          post signed position recommendations on-chain. An agent monitors off-chain signals and
+          submits a signed recommendation the keeper validates and executes. Agents advise, never
+          custody. This separates intelligence from execution and allows strategy logic to evolve
+          without changing the SubWallet contracts.
+        </P>
+        <Callout>
+          The strategy layer is under active development. The interface and registry design
+          are intentionally public — developers building on infinite.fun are encouraged to
+          propose strategy implementations for governance review.
+        </Callout>
+
+        {/* ---- 12. Security ---- */}
+        <H2 id="security">12. Security Model</H2>
         <H3>Access control</H3>
         <Ul>
           <Li>All SubWallet state-changing functions are gated by onlyKeeper. No user, creator, or third party can call them.</Li>
@@ -438,7 +514,7 @@ export function Paper() {
         </Callout>
 
         {/* ---- 11. Risks ---- */}
-        <H2 id="risks">11. Risks</H2>
+        <H2 id="risks">13. Risks</H2>
         <Ul>
           <Li><strong style={{ color: 'var(--ink-2)' }}>Position liquidation.</strong> In extreme adverse market conditions, the backing position may be liquidated. The SubWallet balance is lost. The protocol restarts from fees but the P&L history resets.</Li>
           <Li><strong style={{ color: 'var(--ink-2)' }}>Keeper downtime.</strong> If the keeper is offline for an extended period, fees accumulate unclaimed, the margin is not topped up, and the position may drift closer to liquidation. The keeper is designed to be stateless and easy to restart.</Li>
@@ -449,14 +525,16 @@ export function Paper() {
         </Ul>
 
         {/* ---- 12. Roadmap ---- */}
-        <H2 id="roadmap">12. Roadmap</H2>
+        <H2 id="roadmap">14. Roadmap</H2>
         <Table rows={[
-          ['v0.1 — Now',     'Arc Testnet deployment, bonding curve, SubWallet, keeper, frontend, internal audit.'],
-          ['v0.2',           'Third-party security audit. Keeper failover (redundant nodes). Keeper rotation via commit-reveal.'],
-          ['v0.3',           'Mainnet deployment. Uniswap V4 graduation hook routing post-graduation LP fees back to SubWallet.'],
-          ['v0.4',           'Multi-perp support: one token can back a basket of positions (e.g. 50% BTC, 50% ETH).'],
-          ['v0.5',           'Social layer: creator profiles, coin comments, on-chain reputation scores.'],
-          ['v1.0',           'DAO governance: fee split parameters, graduation threshold, and keeper rotation controlled by token holders.'],
+          ['v0.1',     'Arc Testnet: bonding curve, SubWallet, keeper, frontend, PlatformTreasury, internal audit.'],
+          ['v0.2 — Now', 'INF token deployed (testnet). IPositionStrategy interface published. Admin dashboard. Portfolio page. Live market prices (Pyth proxy).'],
+          ['v0.3',     'Third-party security audit. Keeper failover (redundant nodes). Keeper rotation via commit-reveal.'],
+          ['v0.4',     'Mainnet deployment. Uniswap V4 graduation hook routing post-graduation LP fees back to SubWallet.'],
+          ['v0.5',     'Strategy Layer v1: governance-approved strategy registry, conservative/balanced/aggressive tiers selectable at launch.'],
+          ['v0.6',     'Agent-driven strategies: signed off-chain recommendations submitted on-chain, validated by keeper. INF staker keeper rights.'],
+          ['v0.7',     'INF TGE and liquidity bootstrap. Fee-sharing to stakers. Multi-perp basket support (e.g. 50% BTC, 50% ETH).'],
+          ['v1.0',     'DAO governance live: fee parameters, graduation threshold, strategy approval, treasury allocation — all controlled by INF holders.'],
         ]} />
 
         {/* Footer note */}

@@ -1,4 +1,6 @@
 {
+  "InfiniteToken": "0x199c7111bdfeB8aA8a3ABf7AB69D5554aD8c7A37",
+  "TokenVesting": "0xBea77a9787B2A39a973B12f54387ebe625A68968",
   "chainId": 5042002,
   "chainName": "Arc Testnet",
   "usdc": "0x3600000000000000000000000000000000000000",

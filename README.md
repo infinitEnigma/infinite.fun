@@ -40,7 +40,9 @@ infinite.fun/
 │   ├── KeeperRegistry.sol      Coin registry, keeper ACL, state store
 │   ├── LaunchpadFactory.sol    Deploys Token + BondingCurve + SubWallet per coin; collects launch fee
 │   ├── PlatformTreasury.sol    Aggregates all protocol revenue; owner/keeper role separation
-│   └── interfaces/             IHyperliquidBridge, IUniswapV2Router
+│   ├── InfiniteToken.sol       INF governance token (ERC20Votes, 1B fixed supply, 5 allocation buckets)
+│   ├── TokenVesting.sol        Multi-beneficiary cliff+linear vesting; permissionless release; rescue path
+│   └── interfaces/             IHyperliquidBridge, IUniswapV2Router, IPositionStrategy (strategy layer stub)
 ├── server/                     Express 5 + TypeScript backend
 │   ├── index.ts                App entry + keeper tick loop startup
 │   ├── db.ts                   PostgreSQL 14 connection pool
@@ -71,10 +73,12 @@ infinite.fun/
 
 | Contract | Address |
 |---|---|
-| PlatformTreasury | `0x3cb9f3E17cfF1FeaB02F8a09c7d8c7755c7777Fd` |
-| KeeperRegistry   | `0x51DA850AB51a15624553ABcbAF408B63223B0897` |
-| LaunchpadFactory | `0x919fb3Bf0A66B48c64e8b3857C610C3C2bc0F62A` |
-| USDC (Arc Testnet) | `0x3600000000000000000000000000000000000000` |
+| InfiniteToken (INF) | `0x199c7111bdfeB8aA8a3ABf7AB69D5554aD8c7A37` |
+| TokenVesting        | `0xBea77a9787B2A39a973B12f54387ebe625A68968` |
+| PlatformTreasury    | `0x3cb9f3E17cfF1FeaB02F8a09c7d8c7755c7777Fd` |
+| KeeperRegistry      | `0x51DA850AB51a15624553ABcbAF408B63223B0897` |
+| LaunchpadFactory    | `0x919fb3Bf0A66B48c64e8b3857C610C3C2bc0F62A` |
+| USDC (Arc Testnet)  | `0x3600000000000000000000000000000000000000` |
 
 ## Admin Dashboard
 

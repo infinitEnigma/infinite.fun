@@ -14,7 +14,20 @@ tops up margin, and burns supply on profit-takes. Inspired by the Perps Hood pap
 
 ## Deployed Contracts (Arc Testnet — Chain ID 5042002)
 
-### v2 — Current (PlatformTreasury added, keeper/treasury roles separated)
+### v3 — Current (INF governance token + TokenVesting deployed)
+
+| Contract | Address |
+|---|---|
+| InfiniteToken (INF) | `0x199c7111bdfeB8aA8a3ABf7AB69D5554aD8c7A37` |
+| TokenVesting       | `0xBea77a9787B2A39a973B12f54387ebe625A68968` |
+
+- 1B fixed supply ERC20Votes. Allocation: 40% community, 25% treasury, 20% team (vesting), 10% ecosystem, 5% liquidity.
+- TeamVesting schedule: 4yr linear, 1yr cliff. Call `vesting.createSchedule()` per team member.
+- IPositionStrategy interface stub at `contracts/interfaces/IPositionStrategy.sol`.
+- Deployed by: `0xf7B35a7cDCb6f39ad42ADf7111Ce74B890F5e1B4`
+- Deployed at: 2026-09-17
+
+### v2 — (PlatformTreasury added, keeper/treasury roles separated)
 
 | Contract | Address |
 |---|---|
