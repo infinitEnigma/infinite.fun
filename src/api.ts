@@ -100,6 +100,24 @@ export interface AnalyticsData {
   } | null;
 }
 
+export interface PortfolioData {
+  address: string;
+  coins: (FeedCoin & { sub_wallet: string; curve: string })[];
+  events: KeeperEvent[];
+  snapshots: {
+    coin_address: string; collateral: string; unrealized_pnl: string;
+    mark_price: string; snapshotted_at: string;
+  }[];
+  stats: {
+    coin_count: string;
+    graduated_count: string;
+    total_creator_fees: string;
+    total_burned: string;
+    total_pnl: string;
+  };
+  revenueHistory: { day: string; creator_fees: string }[];
+}
+
 // ---- API calls ----
 
 export const api = {
@@ -133,6 +151,9 @@ export const api = {
 
   analytics: (days = 30) =>
     get<AnalyticsData>(`/analytics?days=${days}`),
+
+  portfolio: (address: string) =>
+    get<PortfolioData>(`/portfolio/${address}`),
 
   uploadImage: async (file: File): Promise<string> => {
     const form = new FormData();

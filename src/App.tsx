@@ -5,6 +5,7 @@ import { CoinDetail } from './pages/CoinDetail';
 import { Leaderboard } from './pages/Leaderboard';
 import { Paper } from './pages/Paper';
 import { Admin } from './pages/Admin';
+import { Portfolio } from './pages/Portfolio';
 
 export default function App() {
   return (
@@ -16,6 +17,8 @@ export default function App() {
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/paper" element={<Paper />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/portfolio/:address" element={<Portfolio />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

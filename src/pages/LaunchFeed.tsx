@@ -171,6 +171,13 @@ export function LaunchFeed() {
           >
             Leaderboard
           </button>
+          <button
+            onClick={() => { void navigate('/portfolio'); }}
+            className="px-3 py-1.5 text-xs rounded-xl border transition-all hover:border-[var(--border-mid)] hover:bg-[var(--surface)]"
+            style={{ borderColor: 'var(--border)', color: 'var(--muted)' }}
+          >
+            Portfolio
+          </button>
           <ConnectKitButton />
           <button
             onClick={() => { void navigate('/launch'); }}
