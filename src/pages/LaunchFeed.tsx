@@ -204,9 +204,7 @@ export function LaunchFeed() {
                 Launch your coin →
               </button>
               <a
-                href="https://perpshood.fun/paper"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/paper"
                 className="px-6 py-3 rounded-2xl font-medium text-sm border transition-all hover:border-[var(--border-mid)]"
                 style={{ borderColor: 'var(--border)', color: 'var(--muted)' }}
               >

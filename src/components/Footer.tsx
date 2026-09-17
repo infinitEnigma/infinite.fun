@@ -32,9 +32,7 @@ export function Footer() {
               GitHub
             </a>
             <a
-              href="https://perpshood.fun/paper"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/paper"
               className="hover:text-[var(--accent-2)] transition-colors"
             >
               Whitepaper
