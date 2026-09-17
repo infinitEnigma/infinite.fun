@@ -43,14 +43,20 @@ Required variables (see `.env.example` for full list):
 ```
 DATABASE_URL=postgresql://infiniteFun:STRONG_PASS@localhost:5432/infinite_fun
 KEEPER_PRIVATE_KEY=0x...
-VITE_FACTORY_ADDRESS=0x...      # from deploy step
-VITE_REGISTRY_ADDRESS=0x...     # from deploy step
+VITE_FACTORY_ADDRESS=0x919fb3Bf0A66B48c64e8b3857C610C3C2bc0F62A
+VITE_REGISTRY_ADDRESS=0x51DA850AB51a15624553ABcbAF408B63223B0897
+VITE_PLATFORM_TREASURY_ADDRESS=0x3cb9f3E17cfF1FeaB02F8a09c7d8c7755c7777Fd
 PORT=3001
 CORS_ORIGIN=https://infinite.fun
 UPLOAD_DIR=/var/www/infinite.fun/images
 IMAGES_BASE_URL=https://infinite.fun/images
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...  # optional
 ```
+
+**Role separation (important for production):**
+- `KEEPER_PRIVATE_KEY` — hot EOA. Can rotate the keeper address and trigger on-chain ops. Cannot withdraw treasury funds.
+- Treasury owner — cold wallet / Gnosis Safe. Set as `TREASURY_OWNER` at deploy time. Has no keeper powers.
+- Keep these as separate wallets with separate keys. The deployer wallet is used only at deploy time and can be decommissioned afterward.
 
 ---
 
@@ -133,6 +139,29 @@ bun run build
 sudo cp -r dist/. /var/www/infinite.fun/
 pm2 restart infinite-fun-server
 ```
+
+---
+
+## Admin Dashboard
+
+The admin dashboard is served at `https://infinite.fun/admin` as part of the static frontend build.
+
+**Access:** connect the wallet whose address matches `PlatformTreasury.owner()`. Non-owner wallets can view read-only data but all write operations are disabled.
+
+**What the owner can do from the dashboard (all writes signed by wallet — no server-side keys involved):**
+- Withdraw accumulated USDC from PlatformTreasury
+- Change `launchFee` (flat fee per coin launch, e.g. after a community vote)
+- Change `platformFeeBps` (swap fee cut, in basis points)
+- Rotate the keeper address on both PlatformTreasury and LaunchpadFactory
+- Initiate and accept two-step ownership transfer
+
+**To update fee params after a community vote:**
+1. Open `https://infinite.fun/admin` with the owner wallet connected
+2. Click "Fee Parameters" panel
+3. Edit `launchFee` or `platformFeeBps` and confirm
+4. Sign the transaction in your wallet
+
+No server restart or code change needed — fee params are read from the contract at runtime.
 
 ---
 

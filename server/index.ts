@@ -6,6 +6,7 @@ import { eventsRouter } from './routes/events.js';
 import { leaderboardRouter } from './routes/leaderboard.js';
 import { feedRouter } from './routes/feed.js';
 import { uploadRouter } from './routes/upload.js';
+import { analyticsRouter } from './routes/analytics.js';
 import { startKeeperLoop } from './keeper/tick.js';
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api/coins', eventsRouter);
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/feed', feedRouter);
 app.use('/api/upload', uploadRouter);
+app.use('/api/analytics', analyticsRouter);
 
 app.get('/api/health', (_req, res) => res.json({ ok: true, ts: Date.now() }));
 

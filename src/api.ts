@@ -84,6 +84,20 @@ export interface LeaderboardEntry {
   total_burned: string;
   total_pnl: string;
   updated_at: string;
+  graduated_at?: string | null;
+}
+
+export interface AnalyticsData {
+  days: number;
+  timeSeries: { day: string; event_type: string; total_usdc: string }[];
+  totals: { event_type: string; total_usdc: string; event_count: string }[];
+  coinsPerDay: { day: string; count: string }[];
+  summary: {
+    total_coins: string;
+    graduated_coins: string;
+    total_fees_usdc: string;
+    total_burned_tokens: string;
+  } | null;
 }
 
 // ---- API calls ----
@@ -116,6 +130,9 @@ export const api = {
 
   leaderboard: (sort: 'pnl' | 'burned' | 'fees' = 'pnl', limit = 20) =>
     get<{ leaderboard: LeaderboardEntry[] }>(`/leaderboard?sort=${sort}&limit=${limit}`),
+
+  analytics: (days = 30) =>
+    get<AnalyticsData>(`/analytics?days=${days}`),
 
   uploadImage: async (file: File): Promise<string> => {
     const form = new FormData();

@@ -1,4 +1,4 @@
-# Implementation Plan: Perps Hood Launchpad
+# Implementation Plan: infinite.fun
 
 ## Summary
 A token launchpad on Arc Testnet where every launched ERC-20 is backed by a live leveraged perpetual position. A bonding curve funds the position from fees; a keeper loop claims fees, splits them 50/15/20/15, tops up margin, and burns supply on profit-takes. Hyperliquid is the perp routing destination; Uniswap V2 receives migrated liquidity at graduation.
