@@ -187,6 +187,16 @@ body::before {
 }
 .tooltip-wrap:hover .tooltip-box { opacity: 1; }
 
+/* ─── Reverse ticker (price strip) ─────────────────────────────────── */
+@keyframes ticker-tape-reverse {
+  0%   { transform: translateX(-33.333%); }
+  100% { transform: translateX(0); }
+}
+
+/* ─── Hide horizontal scrollbar (MarketBar on small screens) ─────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* ─── Scrollbar ─────────────────────────────────────────────────────── */
 ::-webkit-scrollbar       { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }

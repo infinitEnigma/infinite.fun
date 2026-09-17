@@ -4,6 +4,8 @@ import { ConnectKitButton } from 'connectkit';
 import { api, type FeedCoin } from '../api';
 import { CoinCard } from '../components/CoinCard';
 import { Footer } from '../components/Footer';
+import { PriceStrip } from '../components/PriceStrip';
+import { MarketBar } from '../components/MarketBar';
 
 const MARKETS = ['All', 'BTC', 'ETH', 'SOL', 'HYPE', 'AAPL', 'NVDA', 'TSLA', 'MSFT', 'SPY'];
 
@@ -220,7 +222,7 @@ export function LaunchFeed() {
             </div>
           </div>
 
-          {/* Ticker tape */}
+          {/* Coin ticker tape */}
           {coins.length > 0 && (
             <div
               className="ticker-wrap rounded-2xl py-3 mb-2"
@@ -233,6 +235,11 @@ export function LaunchFeed() {
               </div>
             </div>
           )}
+
+          {/* Live market price strip (Pyth) — scrolls opposite direction */}
+          <div className="mb-2">
+            <PriceStrip />
+          </div>
 
           {/* Stats strip */}
           <StatsStrip coins={coins} />
@@ -268,20 +275,37 @@ export function LaunchFeed() {
           </div>
         </div>
 
-        {/* ── Market filter ───────────────────────────────────────── */}
-        <div className="flex gap-1.5 flex-wrap mb-6">
+        {/* ── Market filter — MarketBar (live prices + clickable filter) ── */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--subtle)' }}>
+              Markets
+            </h2>
+            {/* "All" reset button */}
+            <button
+              onClick={() => handleMarketChange('All')}
+              className="text-xs px-2 py-0.5 rounded border transition-all"
+              style={{
+                borderColor: market === 'All' ? 'var(--accent)' : 'var(--border)',
+                color: market === 'All' ? 'var(--accent)' : 'var(--muted)',
+                background: market === 'All' ? 'var(--accent-glow)' : 'transparent',
+              }}
+            >
+              All
+            </button>
+          </div>
+          <MarketBar
+            activeMarket={market === 'All' ? undefined : market}
+            onSelect={(sym) => handleMarketChange(sym)}
+          />
+        </div>
+
+        {/* Legacy market buttons (hidden — keeping MARKETS array for other uses) */}
+        <div className="hidden">
           {MARKETS.map((m) => (
             <button
               key={m}
               onClick={() => handleMarketChange(m)}
-              className="px-3 py-1 text-xs rounded-full border transition-all"
-              style={{
-                background: market === m ? 'var(--accent)' : 'var(--surface)',
-                borderColor: market === m ? 'var(--accent)' : 'var(--border)',
-                color: market === m ? 'var(--bg)' : 'var(--muted)',
-                fontWeight: market === m ? 700 : 400,
-                boxShadow: market === m ? '0 0 10px rgba(122,173,223,0.2)' : 'none',
-              }}
             >
               {m}
             </button>

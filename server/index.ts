@@ -8,6 +8,7 @@ import { feedRouter } from './routes/feed.js';
 import { uploadRouter } from './routes/upload.js';
 import { analyticsRouter } from './routes/analytics.js';
 import portfolioRouter from './routes/portfolio.js';
+import pricesRouter from './routes/prices.js';
 import { startKeeperLoop } from './keeper/tick.js';
 
 const app = express();
@@ -28,6 +29,7 @@ app.use('/api/feed', feedRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/portfolio', portfolioRouter);
+app.use('/api/prices', pricesRouter);
 
 app.get('/api/health', (_req, res) => res.json({ ok: true, ts: Date.now() }));
 

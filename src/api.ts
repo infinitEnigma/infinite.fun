@@ -100,6 +100,14 @@ export interface AnalyticsData {
   } | null;
 }
 
+export interface MarketPrice {
+  symbol: string;
+  price: number;
+  confidence: number;
+  change24h: number | null;
+  publishTime: number;
+}
+
 export interface PortfolioData {
   address: string;
   coins: (FeedCoin & { sub_wallet: string; curve: string })[];
@@ -154,6 +162,9 @@ export const api = {
 
   portfolio: (address: string) =>
     get<PortfolioData>(`/portfolio/${address}`),
+
+  prices: () =>
+    get<{ prices: MarketPrice[]; cachedAt: number; stale?: boolean }>('/prices'),
 
   uploadImage: async (file: File): Promise<string> => {
     const form = new FormData();

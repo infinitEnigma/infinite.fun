@@ -48,12 +48,13 @@ infinite.fun/
 │   │   ├── tick.ts             15s keeper: claim, split, P&L check, profit-take
 │   │   └── hyperliquid.ts      Hyperliquid read/write API client
 │   ├── notify.ts               Discord webhook notifications
-│   ├── routes/                 REST API: coins, events, snapshots, leaderboard, upload, analytics, portfolio
+│   ├── routes/                 REST API: coins, events, snapshots, leaderboard, upload, analytics, portfolio, prices
 │   └── migrations/
 │       └── 001_initial.sql     Full PostgreSQL schema
 ├── src/                        Vite + React + TypeScript frontend
 │   ├── pages/                  LaunchFeed, LaunchForm, CoinDetail, Leaderboard, Paper, Admin, Portfolio
 │   ├── components/             BuySellPanel, CoinCard, PerpPositionCard, FeeSplitBar, KeeperLog,
+│   │                           PriceStrip (Pyth live prices, reverse ticker), MarketBar (9-market filter),
 │   │                           admin/{TreasuryPanel, FeeParamsPanel, CoinsPanel, KeeperPanel,
 │   │                                  OwnershipPanel, AnalyticsPanel}
 │   ├── api.ts                  Typed fetch client for all Express endpoints
