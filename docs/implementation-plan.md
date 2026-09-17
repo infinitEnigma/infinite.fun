@@ -1,50 +1,59 @@
-Good call. Let me read the current UI files before touching anything. Good picture of the current state. Before touching a single line, here are the logo and hero ideas — then I'll do the UI pass.
+Good thinking on all three. Let me respond to each properly.
 
 ---
 
-**Logo ideas for infinite.fun**
+**1. Sub-wallet architecture**
 
-The name has two strong assets: the infinity symbol `∞` and the word "infinite" being literally endless. Three directions:
+The current design already does what you're describing — one SubWallet is deployed per coin, and LaunchpadFactory is the coordination layer. But you've identified a real gap: there's no **platform-level wallet** that aggregates the treasury slice across all coins. Right now the 20% treasury slice sits dispersed across N SubWallet contracts, and the protocol has no single place to withdraw operating funds from.
 
-**Direction 1 — The ∞ as a position**
-The infinity loop rendered as two candles (like a trading chart). Left loop = long position going up, right loop = the burn. Color: steel blue fading to the accent blue. Works as a favicon at 16px and a wordmark.
+The fix is clean:
 
-**Direction 2 — Orbit / flywheel**
-A circle of small dots orbiting a central coin icon — each dot represents one step of the keeper cycle (fee → margin → profit → burn → fee). Animated in CSS (slow rotation, 20s). Clean, technical, says "perpetual motion."
+- Add a `PlatformTreasury` contract — one single address the factory knows about. All 20% treasury slices from all SubWallets send directly there (not to individual SubWallets). Keeper calls a single `withdraw()` on PlatformTreasury to collect operating funds.
+- The 50/15/20/15 split stays the same but the 20% destination changes from "held in SubWallet" to "pushed directly to PlatformTreasury on each claim."
+- SubWallet remains per-coin (correct architecture) — it manages only the perp position and the per-coin creator/buyback logic.
+- PlatformTreasury gets a multisig or timelock for owner withdrawal — the keeper doesn't control it.
 
-**Direction 3 — Minimal wordmark**
-`∞.fun` in Space Grotesk Bold. The `∞` in the accent blue (`#acc6e9`), `.fun` in a dimmer white. No icon — just the mark. This is the strongest at small sizes and in the nav.
-
-**My pick:** Direction 3 for the nav logo (just CSS + the font you already have), Direction 2 as the hero illustration (pure CSS animation, no image dependency).
+This is a small contract addition, not a redesign. The bigger question is: should the keeper EOA and the treasury be **separate addresses**? Yes, they should. Keeper = hot wallet for on-chain ops (low balance, rotatable). Treasury = cold multisig for accumulated fees (high balance, locked). Worth separating now before mainnet.
 
 ---
 
-**Hero section ideas**
+**2. Platform fees + NFT tab**
 
-Current hero is just a title + subtitle. Three approaches that would make it land harder:
+On platform fees — launchpads typically take one or more of:
 
-**Option A — Live stats strip**
-Below the headline: three animated counters. "X coins live", "X USDC in perps", "X tokens burned." Polled from the API every 30s. Makes the page feel alive even with few coins.
+- **Launch fee** — flat USDC charged when `launchCoin()` is called (e.g. 5–50 USDC). Simple, predictable.
+- **Trading fee cut** — a slice of the 1% bonding curve fee goes to the platform before the 50/15/20/15 split. E.g. take the 1% fee, send 0.2% to PlatformTreasury, split the remaining 0.8%.
+- **Graduation fee** — a percentage of the USDC in the curve at graduation flows to PlatformTreasury before LP migration.
 
-**Option B — Animated flywheel diagram**
-A CSS-only diagram showing the cycle: Curve → Fees → SubWallet → Hyperliquid → Profit → Burn → back to Curve. Nodes connected by animated dashed lines. Explains the mechanic visually in 2 seconds.
+The cleanest sustainable model for infinite.fun: **flat launch fee (10–25 USDC) + 0.2% platform cut on every swap**. No percentage of the 50/15/20/15 needs to change — just cut the trading fee before the split happens.
 
-**Option C — Ticker tape**
-A horizontally scrolling marquee of all active coins with their live P&L. Like a Bloomberg terminal strip. Feels native to the trading aesthetic.
+On **NFTs** — this is genuinely interesting and fits the mechanic well. A few directions:
 
-**Best combination:** Option A (stats strip) + Option C (ticker tape) together below the headline. Direction 3 logo in the nav. Option B flywheel diagram can live in an "How it works" section further down the page.
+- **Coin NFTs**: when a coin is launched, the creator receives a soulbound NFT representing their "engine" — it visualizes the position in real time (P&L, collateral, total burned). Tradeable or soulbound depending on design.
+- **Proof-of-burn NFT**: when a user's buyback burns tokens, they receive an NFT receipt with the burn amount, timestamp, and position state. Collectible, no utility, but adds a social layer.
+- **Keeper NFT**: a single NFT that grants the ability to run the keeper for a specific coin. Holder earns a small slice of keeper fees. Creates a secondary market for keeper operation rights.
+
+The **NFT launch tab** idea — where users can launch NFT collections alongside tokens — is a bigger surface. Worth planning separately. The integration with the flywheel would be: NFT mint proceeds go to the SubWallet, deepening the position. That's a natural extension.
 
 ---
 
-Ready to build all of this. Here's what the UI pass will cover:
+**3. Open dev approach / infinite.fun as an ethos**
 
-- **Global CSS**: deeper shadows, glow effects on cards, glass surface variables, improved border radii, subtle grid/noise texture on background
-- **Nav**: `∞.fun` wordmark, glow on hover for buttons, frosted glass stronger
-- **Hero**: stats strip (live counters), ticker tape marquee, better headline sizing
-- **CoinCard**: box-shadow with accent glow on hover, glass effect, richer info (leverage badge, time since launch, position status dot)
-- **CoinDetail**: better stat cards with icons and tooltips, polished chart, improved tab design
-- **Footer**: links (GitHub, docs, Discord), chain info, "built on Arc" badge, GPL notice
-- **Tooltips**: added to all fee split percentages, leverage badge, graduation threshold, keeper status
-- **Transitions**: smooth page entrance animations, card hover lifts
+This is the right frame and it should be explicit in the product. A few thoughts:
 
-Say "go" and I'll build it all now.
+- **Governance runway**: the 20% treasury isn't just operating costs — it's a grants fund. Once the DAO is live (roadmap v1.0), holders vote on what to build next. The flywheel funds its own development.
+- **Feature cadence**: plan in two-week sprints. Each sprint ships something visible. Between sprints, nothing is rushed. The roadmap in the whitepaper already has the right sequencing — v0.2 (audit), v0.3 (mainnet + V4), v0.4 (multi-perp basket), v0.5 (social layer), v1.0 (DAO).
+- **Community input loop**: add a `/ideas` page or a GitHub Discussions board where users propose features. The keeper log and event feed already give users a sense of the mechanics — but a public roadmap they can comment on turns passive users into contributors.
+- **The name does work for you here**: "infinite" isn't just a stylistic choice, it's a commitment. Features should stack, not replace. The bonding curve, the perp, the keeper, the burn — those are the engine. NFTs, multi-perp, DAO governance, social layer — those are cylinders added to the same engine.
+
+---
+
+**What I'd action next (in order):**
+
+1. **PlatformTreasury contract** — small, bounded, fixes the fee aggregation gap. Add platform launch fee and 0.2% trading cut at the same time.
+2. **Separate keeper EOA from treasury address** in config and contracts.
+3. **NFT receipts for burns** — low complexity, high social value. Start there before a full NFT launch tab.
+4. **NFT launch tab** — design it as a separate planning session once the core contracts are audited.
+5. **`/ideas` page or GitHub Discussions** — low effort, high signal for long-term direction.
+
+Want me to start on item 1 (PlatformTreasury + platform fees) now, or plan the NFT mechanic first?

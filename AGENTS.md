@@ -14,15 +14,25 @@ tops up margin, and burns supply on profit-takes. Inspired by the Perps Hood pap
 
 ## Deployed Contracts (Arc Testnet — Chain ID 5042002)
 
+### v2 — Current (PlatformTreasury added, keeper/treasury roles separated)
+
+| Contract | Address |
+|---|---|
+| PlatformTreasury | `0x3cb9f3E17cfF1FeaB02F8a09c7d8c7755c7777Fd` |
+| KeeperRegistry   | `0x51DA850AB51a15624553ABcbAF408B63223B0897` |
+| LaunchpadFactory | `0x919fb3Bf0A66B48c64e8b3857C610C3C2bc0F62A` |
+| USDC (Arc Testnet) | `0x3600000000000000000000000000000000000000` |
+
+- Deployed by: `0xf7B35a7cDCb6f39ad42ADf7111Ce74B890F5e1B4`
+- Deployed at: 2026-09-17
+- Addresses also in `src/contracts.json`
+
+### v1 — Superseded
+
 | Contract | Address |
 |---|---|
 | KeeperRegistry | `0xfd8B9Ddb776Bd1608F1774255B7FE2caf674fa08` |
 | LaunchpadFactory | `0x937a4C48E3C50875AF19825B177d6A71b5194C31` |
-| USDC (Arc Testnet) | `0x3600000000000000000000000000000000000000` |
-
-- Deployed by: `0xf7B35a7cDCb6f39ad42ADf7111Ce74B890F5e1B4`
-- Deployed at: 2026-09-16
-- Addresses also in `src/contracts.json`
 
 ## Tech Stack
 

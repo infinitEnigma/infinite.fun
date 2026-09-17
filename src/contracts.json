@@ -1,9 +1,8 @@
 {
   "chainId": 5042002,
-  "network": "Arc Testnet",
-  "keeperRegistry": "0xfd8B9Ddb776Bd1608F1774255B7FE2caf674fa08",
-  "launchpadFactory": "0x937a4C48E3C50875AF19825B177d6A71b5194C31",
+  "chainName": "Arc Testnet",
   "usdc": "0x3600000000000000000000000000000000000000",
-  "deployedAt": "2026-09-16",
-  "deployer": "0xf7B35a7cDCb6f39ad42ADf7111Ce74B890F5e1B4"
+  "platformTreasury": "0x3cb9f3E17cfF1FeaB02F8a09c7d8c7755c7777Fd",
+  "keeperRegistry": "0x51DA850AB51a15624553ABcbAF408B63223B0897",
+  "launchpadFactory": "0x919fb3Bf0A66B48c64e8b3857C610C3C2bc0F62A"
 }

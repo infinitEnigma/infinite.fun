@@ -55,8 +55,9 @@ export function Footer() {
         >
           <div className="font-medium mb-2" style={{ color: 'var(--muted)' }}>Deployed contracts — Arc Testnet (Chain ID 5042002)</div>
           {[
-            { label: 'KeeperRegistry',   addr: '0xfd8B9Ddb776Bd1608F1774255B7FE2caf674fa08' },
-            { label: 'LaunchpadFactory', addr: '0x937a4C48E3C50875AF19825B177d6A71b5194C31' },
+            { label: 'PlatformTreasury', addr: '0x3cb9f3E17cfF1FeaB02F8a09c7d8c7755c7777Fd' },
+            { label: 'KeeperRegistry',   addr: '0x51DA850AB51a15624553ABcbAF408B63223B0897' },
+            { label: 'LaunchpadFactory', addr: '0x919fb3Bf0A66B48c64e8b3857C610C3C2bc0F62A' },
             { label: 'USDC',             addr: '0x3600000000000000000000000000000000000000' },
           ].map(({ label, addr }) => (
             <div key={label} className="flex items-center gap-2 flex-wrap">
